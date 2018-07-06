@@ -4,7 +4,7 @@ Description: This script auto generates outlook signatures by modifying a prepar
 By Kyle Elliott
 kelliott@ciotech.us
 
-Use: 
+Use:
 1. Create a *.docx template file
 2. Edit the file within word so it looks the way you want the signature to look and edit text to correspond with the AD properties
 further down in the script. For example the test "Title" corresponds to the AD property "title".
@@ -20,15 +20,15 @@ $SignatureVersion = "1.0" #Change this if you have updated the signature. If you
 $ForceSignature = '0' #If set to '0', the signature will be editable in Outlook and if set to '1' will be non-editable and forced.
 $DefaultAddress = ''
 $DefaultCity = ''
-$DefaultTelephone = '727-232-8356'
- 
- 
+$DefaultTelephone = ''
+
+
 #Environment variables
 $AppData=(Get-Item env:appdata).value
 $SigPath = '\Microsoft\Signatures'
 $LocalSignaturePath = $AppData+$SigPath
 $RemoteSignaturePathFull = $SigSource
- 
+
 #Copy version file
 If (!(Test-Path -Path $LocalSignaturePath\$SignatureVersion))
 {
@@ -39,12 +39,12 @@ Elseif (Test-Path -Path $LocalSignaturePath\$SignatureVersion)
 Write-Output "Latest signature already exists"
 break
 }
- 
+
 #Check signature path (needs to be created if a signature has never been created for the profile
 if (!(Test-Path -path $LocalSignaturePath)) {
 	New-Item $LocalSignaturePath -Type Directory
 }
- 
+
 #Get Active Directory information for current user
 $UserName = $env:username
 $Filter = "(&amp;(objectCategory=User)(samAccountName=$UserName))"
@@ -64,7 +64,7 @@ $ADCity = $ADUser.l
 $ADPOBox = $ADUser.postofficebox
 $ADCustomAttribute1 = $ADUser.extensionAttribute1
 $ADModify = $ADUser.whenChanged
- 
+
 #Copy signature templates from domain to local Signature-folder
 Write-Output "Copying Signatures"
 Copy-Item "$Sigsource" $LocalSignaturePath -Recurse -Force
@@ -78,34 +78,34 @@ $MatchAllWordForms = $False
 $Forward = $True
 $Wrap = $FindContinue
 $Format = $False
- 
+
 #Insert variables from Active Directory to rtf signature-file
 $MSWord = New-Object -ComObject word.application
 $fullPath = $LocalSignaturePath+'\'+$SignatureName+'.docx'
 $MSWord.Documents.Open($fullPath)
- 
-#User Name $ Designation 
-$FindText = "DisplayName" 
+
+#User Name $ Designation
+$FindText = "DisplayName"
 $Designation = $ADCustomAttribute1.ToString() #designations in Exchange custom attribute 1
-If ($Designation -ne '') { 
+If ($Designation -ne '') {
 	$Name = $ADDisplayName.ToString()
 	$ReplaceText = $Name+', '+$Designation
 	}
 Else {
-	$ReplaceText = $ADDisplayName.ToString() 
+	$ReplaceText = $ADDisplayName.ToString()
 }
 $MSWord.Selection.Find.Execute($FindText, $MatchCase, $MatchWholeWord,	$MatchWildcards, $MatchSoundsLike, $MatchAllWordForms, $Forward, $Wrap,	$Format, $ReplaceText, $ReplaceAll	)
-$LogInfo += $NL+'Username: '+$ReplaceText	
- 
-#Title		
+$LogInfo += $NL+'Username: '+$ReplaceText
+
+#Title
 $FindText = "Title"
 $ReplaceText = $ADTitle.ToString()
 $MSWord.Selection.Find.Execute($FindText, $MatchCase, $MatchWholeWord,	$MatchWildcards, $MatchSoundsLike, $MatchAllWordForms, $Forward, $Wrap,	$Format, $ReplaceText, $ReplaceAll	)
 $LogInfo += $NL+'Title: '+$ReplaceText
-	
+
 #Description
- 
-If ($ADDescription -ne '') { 
+
+If ($ADDescription -ne '') {
    	$FindText = "Description"
    	$ReplaceText = $ADDescription.ToString()
                            }
@@ -115,10 +115,10 @@ Else {
     }
 	$MSWord.Selection.Find.Execute($FindText, $MatchCase, $MatchWholeWord,	$MatchWildcards, $MatchSoundsLike, $MatchAllWordForms, $Forward, $Wrap,	$Format, $ReplaceText, $ReplaceAll	)
 	$LogInfo += $NL+'Description: '+$ReplaceText
-   	
+
 #Street Address
- 
-If ($ADStreetAddress -ne '') { 
+
+If ($ADStreetAddress -ne '') {
     $FindText = "StreetAddress"
     $ReplaceText = $ADStreetAddress.ToString()
 }
@@ -128,22 +128,22 @@ Else {
     }
 	$MSWord.Selection.Find.Execute($FindText, $MatchCase, $MatchWholeWord,	$MatchWildcards, $MatchSoundsLike, $MatchAllWordForms, $Forward, $Wrap,	$Format, $ReplaceText, $ReplaceAll	)
 	$LogInfo += $NL+'Street Address: '+$ReplaceText
- 
+
 #City
- 
-If ($ADCity -ne '') { 
+
+If ($ADCity -ne '') {
     $FindText = "City"
     $ReplaceText = $ADCity.ToString()
 }
 Else {
     $FindText = "City"
-    $ReplaceText = $DefaultCity 
+    $ReplaceText = $DefaultCity
     }
 	$MSWord.Selection.Find.Execute($FindText, $MatchCase, $MatchWholeWord,	$MatchWildcards, $MatchSoundsLike, $MatchAllWordForms, $Forward, $Wrap,	$Format, $ReplaceText, $ReplaceAll	)
 	$LogInfo += $NL+'City: '+$ReplaceText
-	
+
 #Telephone
-If ($ADTelephoneNumber -ne "") { 
+If ($ADTelephoneNumber -ne "") {
 	$FindText = "TelephoneNumber"
 	$ReplaceText = $ADTelephoneNumber.ToString()
 }
@@ -153,9 +153,9 @@ Else {
 }
 	$MSWord.Selection.Find.Execute($FindText, $MatchCase, $MatchWholeWord,	$MatchWildcards, $MatchSoundsLike, $MatchAllWordForms, $Forward, $Wrap,	$Format, $ReplaceText, $ReplaceAll	)
 	$LogInfo += $NL+'Telephone: '+$ReplaceText
-	
+
 #Mobile
-If ($ADMobile -ne "") { 
+If ($ADMobile -ne "") {
 	$FindText = "MobileNumber"
 	$ReplaceText = $ADMobile.ToString()
    }
@@ -165,45 +165,45 @@ Else {
 	}
 	$MSWord.Selection.Find.Execute($FindText, $MatchCase, $MatchWholeWord,	$MatchWildcards, $MatchSoundsLike, $MatchAllWordForms, $Forward, $Wrap,	$Format, $ReplaceText, $ReplaceAll	)
     $LogInfo += $NL+'MobileNumber: '+$ReplaceText
-    
+
 #Email Address
 If ($ADEmailAddress -ne "") {
     $FindText = "EmailAddress"
     $ReplaceText = $ADEmailAddress.ToString()
 }
- 
-#Save new message signature 
- 
+
+#Save new message signature
+
 Write-Output "Saving Signatures"
- 
+
 #Save HTML
- 
+
 $saveFormat = [Enum]::Parse([Microsoft.Office.Interop.Word.WdSaveFormat], "wdFormatHTML");
 $path = $LocalSignaturePath+'\'+$SignatureName+".htm"
 $MSWord.ActiveDocument.saveas([ref]$path, [ref]$saveFormat)
-    
-#Save RTF 
+
+#Save RTF
 $saveFormat = [Enum]::Parse([Microsoft.Office.Interop.Word.WdSaveFormat], "wdFormatRTF");
 $path = $LocalSignaturePath+'\'+$SignatureName+".rtf"
 $MSWord.ActiveDocument.SaveAs([ref] $path, [ref]$saveFormat)
-	
-#Save TXT    
+
+#Save TXT
 $saveFormat = [Enum]::Parse([Microsoft.Office.Interop.Word.WdSaveFormat], "wdFormatText");
 $path = $LocalSignaturePath+'\'+$SignatureName+".txt"
 $MSWord.ActiveDocument.SaveAs([ref] $path, [ref]$SaveFormat)
 $MSWord.ActiveDocument.Close()
 $MSWord.Quit()
-	
- 
+
+
 #Office 2010
 If (Test-Path HKCU:'\Software\Microsoft\Office\14.0')
 {
 Write-Output "Setting signature for Office 2010"
-    If (Get-ItemProperty -Name 'ReplySignature' -Path HKCU:'\Software\Microsoft\Office\14.0\Common\MailSettings' -ErrorAction SilentlyContinue) 
+    If (Get-ItemProperty -Name 'ReplySignature' -Path HKCU:'\Software\Microsoft\Office\14.0\Common\MailSettings' -ErrorAction SilentlyContinue)
     {
     Write-Output "Signature already exists"
-    } 
-    Else { 
+    }
+    Else {
     New-ItemProperty HKCU:'\Software\Microsoft\Office\14.0\Common\MailSettings' -Name 'ReplySignature' -Value $SignatureName -PropertyType 'String' -Force
     New-ItemProperty HKCU:'\Software\Microsoft\Office\14.0\Common\MailSettings' -Name 'NewSignature' -Value $SignatureName -PropertyType 'String' -Force
     }
@@ -212,25 +212,25 @@ If ((Test-Path HKCU:'\Software\Microsoft\Office\14.0') -eq $False)
 {
 Write-Output "Office 2010 is not installed"
 }
-#Office 2013 
- 
+#Office 2013
+
 If (Test-Path HKCU:'\Software\Microsoft\Office\15.0')
- 
+
 {
 Write-Output "Setting signature for Office 2013"
- 
+
 If ($ForceSignature -eq '0')
- 
+
 {
 Write-Output "Setting signature for Office 2013 as available"
- 
- 
+
+
 $Outlook = "Outlook"
 if ($Outlook -ne $null)
 {
 Stop-Process -Name $Outlook -Force
 }
- 
+
 $MSWord = New-Object -comobject word.application
 $EmailOptions = $MSWord.EmailOptions
 $EmailSignature = $EmailOptions.EmailSignature
@@ -238,24 +238,24 @@ $EmailSignatureEntries = $EmailSignature.EmailSignatureEntries
 $EmailSignature.NewMessageSignature="$SignatureName"
 $EmailSignature.ReplyMessageSignature="$SignatureName"
 Stop-Process -Name $Outlook
- 
+
 }
- 
+
 If ($ForceSignature -eq '1')
 {
 Write-Output "Setting signature for Office 2013 as forced"
-    If (Get-ItemProperty -Name 'NewSignature' -Path HKCU:'\Software\Microsoft\Office\15.0\Common\MailSettings' -ErrorAction SilentlyContinue) { } 
-    Else { 
-    New-ItemProperty HKCU:'\Software\Microsoft\Office\15.0\Common\MailSettings' -Name 'NewSignature' -Value $SignatureName -PropertyType 'String' -Force 
-    } 
-    If (Get-ItemProperty -Name 'ReplySignature' -Path HKCU:'\Software\Microsoft\Office\15.0\Common\MailSettings' -ErrorAction SilentlyContinue) { } 
-    Else { 
+    If (Get-ItemProperty -Name 'NewSignature' -Path HKCU:'\Software\Microsoft\Office\15.0\Common\MailSettings' -ErrorAction SilentlyContinue) { }
+    Else {
+    New-ItemProperty HKCU:'\Software\Microsoft\Office\15.0\Common\MailSettings' -Name 'NewSignature' -Value $SignatureName -PropertyType 'String' -Force
+    }
+    If (Get-ItemProperty -Name 'ReplySignature' -Path HKCU:'\Software\Microsoft\Office\15.0\Common\MailSettings' -ErrorAction SilentlyContinue) { }
+    Else {
     New-ItemProperty HKCU:'\Software\Microsoft\Office\15.0\Common\MailSettings' -Name 'ReplySignature' -Value $SignatureName -PropertyType 'String' -Force
-    } 
+    }
 }
- 
+
 }
- 
+
 If ((Test-Path HKCU:'\Software\Microsoft\Office\15.0') -eq $False)
 {
 Write-Output "Office 2013 is not installed"
