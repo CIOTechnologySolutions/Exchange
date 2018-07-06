@@ -1,0 +1,2 @@
+#TYPE Microsoft.ActiveDirectory.Management.ADUser
+"DistinguishedName","Enabled","GivenName","Name","ObjectClass","ObjectGUID","SamAccountName","SID","Surname","UserPrincipalName"
