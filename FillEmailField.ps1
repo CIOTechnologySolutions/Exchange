@@ -14,7 +14,7 @@ FillEmailField.ps1 -csv c:\temp\emailaddress.csv
   kelliott(at)ciotech(dot)us
   Provided as is, without warranty
   #>
-﻿{
+﻿
 Param(
     [Parameter(Mandatory=$true)]
     [string]$csv
@@ -23,5 +23,4 @@ Param(
 $users = Import-Csv $csv
 foreach ($user in $users) {
     Set-ADUser -Identity $user.SamAccountName -EmailAddress $user.EmailAddress
-}
 }
