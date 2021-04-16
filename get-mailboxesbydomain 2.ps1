@@ -1,0 +1,3 @@
+C:\Support\get-mailboxesbydomain.ps1
+Get-Mailbox -ResultSize Unlimited | Where-Object {($_.PrimarySMTPAddress -like "*@emiindustries.com")} | Add-MailboxPermission -AccessRights fullaccess -AutoMapping $false -user fisherman@emiindustries.com
+C:\Support\Create-mailboxfolder.ps1 -credentials (get-credential) -mailbox C:\temp\mailboxes-test.txt -requiredfolders "-Archive" -parentfolder "\" -ewsurl "https://05tpawnexcas01.eserverdata.com/ews/exchange.asmx" -ewsmanagedapipath "C:\Support\Exchange web services\Microsoft.Exchange.WebServices.dll"
